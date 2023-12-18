@@ -1,0 +1,87 @@
+<template>
+  <div style="width: 90%">
+    <h3 style="margin-bottom: 20px">新增管理员</h3>
+<!--    :rules="rules" ref="ruleForm" 这两个是为了校验-->
+    <el-form :inline="true" :model="form" :rules="rules" ref="ruleForm" label-width="100px">
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
+      </el-form-item>
+
+      <el-form-item label="联系方式" prop="phone">
+        <el-input v-model="form.phone" placeholder="请输入联系方式"></el-input>
+      </el-form-item>
+
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
+      </el-form-item>
+
+<!--      <el-form-item label="密码" prop="password">-->
+<!--        <el-input v-model="form.password" placeholder="请输入密码"></el-input>-->
+<!--      </el-form-item>-->
+
+    </el-form>
+    <div style="text-align: center;margin-top: 10px"  >
+      <el-button type="primary" @click="save" size="medium">提交</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+//需要在package.json 引入axios,然后引入工具包
+import request from "@/utils/request";
+export default {
+  name:'AddAdmin',
+  data(){
+    const checkPhone = (rule, value, callback) => {
+      setTimeout(() => {
+        if (!/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(value)) {
+          callback(new Error('请输入合法手机号'));
+        }else {
+          callback();
+        }
+      }, 500);
+    };
+    // const checkEmail = (rule, value, callback) => {
+    //   setTimeout(() => {
+    //     if (!/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(value)) {
+    //       callback(new Error('请输入合法手机号'));
+    //     }else {
+    //       callback();
+    //     }
+    //   }, 500);
+    // };
+    return{
+      form:{},
+      //校验绑定
+      rules: {
+        username: [
+          {required: true, message: '请输入用户名', trigger: 'blur'},
+          {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
+        ],
+        phone:[
+          { validator: checkPhone, trigger: 'blur' }
+        ],
+      }
+    }
+  },
+  methods: {
+    save() {
+      //这个要注意与上面的对应绑定
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          request.post('/admin/save', this.form).then(res => {
+            if (res.code === '200') {
+              //弹出提示信息
+              this.$notify.success('新增成功')
+              //清空表单格
+              this.$refs['ruleForm'].resetFields();
+            } else {
+              this.$notify.error(res.msg)
+            }
+          })
+        }
+      })
+    }
+  }
+}
+</script>

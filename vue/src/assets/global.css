@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #eee;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/*
+!important 使该条样式属性声明具有最高优先级。
+进行展示部分头部设计
+*/
+th{
+    background-color: aliceblue !important;
+}
